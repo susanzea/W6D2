@@ -5,7 +5,17 @@ require 'active_support/inflector'
 
 class SQLObject
   def self.columns
-    # ...
+    return @columns if @columns
+
+    everything = DBConnection.execute2(<<-SQL).first
+      SELECT
+        *
+      FROM
+        cats
+    SQL
+
+    @columns = everything.map! { |obj| obj.to_sym }
+
   end
 
   def self.finalize!
@@ -16,11 +26,12 @@ class SQLObject
   end
 
   def self.table_name
-    # ...
+    name = (self.to_s).downcase
+    name + 's'
   end
 
   def self.all
-    # ...
+    
   end
 
   def self.parse_all(results)
@@ -40,7 +51,11 @@ class SQLObject
   end
 
   def attribute_values
-    # ...
+
+    # hash = 
+    puts self.instance_variable_get('@attributes'.to_sym) 
+    # hash ||= Hash.new
+    # hash
   end
 
   def insert
